@@ -2,18 +2,12 @@ import os
 import json
 import glob
 import re
+import timeit
+import time
+import pylumber as pl
 
 from docx import Document
 from dotenv import dotenv_values
-
-print(os.path.exists(".env.example"))
-
-# Check .env file exists
-if not os.path.exists(".env.example"):
-    raise Exception("Please create a .env file with the required environment variables. See .env.example for an example.")
-
-# Load environment variables
-ENV = dict(dotenv_values(".env.example"))
 
 
 def json_to_dict(json_path: str):
@@ -27,8 +21,7 @@ def csv_to_dict(file_path: str):
             # Get index of first comma
             firstComma = line.find(",")
             tempDict[line[:firstComma]] = line[firstComma+1:].strip()
-            
-    print(tempDict)
+
     return tempDict
 
 # Credits to Scanny for the code below:
@@ -86,25 +79,28 @@ def paragraph_replace_text(paragraph, regex, replace_str):
 
 
 class template():
-    def __init__(self, lut: dict, template: str):
+    def __init__(self, lut: dict, template: str, output_dir: str = "output"):
         # Open and parse json config file:
         self.LOOKUP = lut
         self.TEMPLATE = template
+        # Check to see if output directory exists
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+        self.OUTPUT_DIR = output_dir
 
     def find_and_replace_single(self, config: json):
         # Returns: Docx Document
         tempConfig = json_to_dict(config)
         tempDocx = Document(self.TEMPLATE)
 
-        print(tempConfig)
-
         # Do reactjs replacement 
         reMFR = re.compile(r"\{([^}]*)\}")
-        for paragraph in tempDocx.paragraphs:
-            paragraph = paragraph_replace_text(paragraph, reMFR, "TEMPTEXT")
+        for key, value in tempConfig.items():
+            reMFR = re.compile(r"\{" + key + r"\}")
+            for paragraph in tempDocx.paragraphs:
+                paragraph = paragraph_replace_text(paragraph, reMFR, value)
         # Save the edited document within output directory
-        tempDocx.save(f"{ENV['OUTPUT_DIR']}/{tempConfig['UID']}.docx")
-        print(tempConfig)
+        tempDocx.save(f"{self.OUTPUT_DIR}/{tempConfig['UID']}.docx")
         
         
     
@@ -113,9 +109,3 @@ class template():
 
     def __exit__(self):
         print("Exiting...")
-
-# Iterate through all .json files in the config directory
-
-CVGeneration = template(csv_to_dict(ENV["LUT_PATH"]), ENV["TEMPLATE_PATH"])
-for config_file in glob.glob(f"{ENV['CONFIG_DIR']}/*.json"):
-    CVGeneration.find_and_replace_single(config_file)
