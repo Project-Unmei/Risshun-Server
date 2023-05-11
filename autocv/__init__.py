@@ -4,11 +4,11 @@ import glob
 import re
 import timeit
 import time
-import pylumber as pl
+import pylumber
+import copy
 
 from docx import Document
 from dotenv import dotenv_values
-
 
 def json_to_dict(json_path: str):
     with open(json_path) as f:
@@ -78,34 +78,48 @@ def paragraph_replace_text(paragraph, regex, replace_str):
     return paragraph  
 
 
-class template():
-    def __init__(self, lut: dict, template: str, output_dir: str = "output"):
-        # Open and parse json config file:
-        self.LOOKUP = lut
-        self.TEMPLATE = template
+class docx_template():
+    def __init__(self, lut: dict, template: str, output_dir: str = "output", silent: bool = False):
+        # Loading template docx file for editing
+        self.logger = pylumber.lumberjack(silent=False)
+        self.logger.log(f"Loading template `{self.logger.format(template, 2)}`", "INFO")
+        
+        # Setting self variables
+        self.LUT = lut
+        self.TEMPLATE = Document(template)
+        
         # Check to see if output directory exists
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
+            self.logger.log(f"Created output directory: {output_dir}")
         self.OUTPUT_DIR = output_dir
 
-    def find_and_replace_single(self, config: json):
-        # Returns: Docx Document
-        tempConfig = json_to_dict(config)
-        tempDocx = Document(self.TEMPLATE)
-
-        # Do reactjs replacement 
-        reMFR = re.compile(r"\{([^}]*)\}")
+    def find_and_replace_single(self, config: dict):
+        # config: requires UID field
+        try:
+            assert "UID" in config.keys()
+        except AssertionError:
+            self.logger.log(f"└-- {self.logger.format('UID', 2)} field not found in config file.", 2)
+            return
+        tempConfig = config
+        tempDocx = copy.deepcopy(self.TEMPLATE)
+        tempLUT = self.LUT
+        
         for key, value in tempConfig.items():
-            reMFR = re.compile(r"\{" + key + r"\}")
+            reMFR = re.compile(r"\$\{" + key + r"\}")
             for paragraph in tempDocx.paragraphs:
                 paragraph = paragraph_replace_text(paragraph, reMFR, value)
-        # Save the edited document within output directory
-        tempDocx.save(f"{self.OUTPUT_DIR}/{tempConfig['UID']}.docx")
-        
-        
-    
-    def find_and_replace_group(self, config_path: str):
-        print(config_path)
 
+        # Save the edited document within output directory
+        savePath = f"{self.OUTPUT_DIR}/{tempConfig['UID']}.docx"
+        tempDocx.save(savePath)
+        self.logger.log(f"└-- Saved document at `{self.logger.format(savePath, 2)}`", "OK")
+
+    def find_and_replace_folder(self, config_path: str, parser: callable = json_to_dict):
+        # Obtain all .json files from config directory
+        for config_file in glob.glob(f"{config_path}/*.json"):
+            self.logger.log(f"Processing `{self.logger.format(config_file, 2)}` configuration file.", "INFO")
+            self.find_and_replace_single(parser(config_file))
+        
     def __exit__(self):
         print("Exiting...")

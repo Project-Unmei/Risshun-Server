@@ -1,0 +1,7 @@
+{
+    "UID":              "654321",
+    "JOB_TITAL":        "Software Engineer",
+    "COMPANY_NAME":     "TD",
+    "JOB_LOCATION":     "ON - Vancouver",
+    "SKILLS":           ["Teamwork", "Python", "Machine Learning"]
+}

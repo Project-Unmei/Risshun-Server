@@ -1,0 +1,7 @@
+{
+    "UID":              "123456",
+    "JOB_TITAL":        "Business Analyst",
+    "COMPANY_NAME":     "Citadel",
+    "JOB_LOCATION":     "ON - Oakville",
+    "SKILLS":           ["Teamwork", "Python", "Machine Learning"]
+}
