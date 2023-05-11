@@ -20,8 +20,10 @@ def csv_to_dict(file_path: str):
         for line in csvFile:
             # Get index of first comma
             firstComma = line.find(",")
-            tempDict[line[:firstComma]] = line[firstComma+1:].strip()
-
+            tempValue = line[firstComma+1:].strip()
+            tempValue = tempValue[1:-1] if tempValue.startswith("\"") and tempValue.endswith("\"") else tempValue
+            tempDict[line[:firstComma]] = tempValue
+    print(tempDict)
     return tempDict
 
 # Credits to Scanny for the code below:
@@ -94,6 +96,30 @@ class docx_template():
             self.logger.log(f"Created output directory: {output_dir}")
         self.OUTPUT_DIR = output_dir
 
+    def parse_config_with_lut(self, config: dict):
+        # Modify the config dict so for every value which is a list, use the LUT to lookup and create
+        # new key-value pairs within this config
+        tempConfig = {}
+        for key, value in config.items():
+            if isinstance(value, list):
+                for i, item in enumerate(value):
+                    if item in self.LUT.keys():
+                        tempConfig[f"{key}_{i + 1}_KEY"] = item
+                        tempConfig[f"{key}_{i + 1}_VALUE"] = self.LUT[item]
+                    else:
+                        self.logger.log(f"└-- {self.logger.format(item, 2)} not found in LUT.", 2)
+                        tempConfig[f"{key}_{i + 1}_KEY"] = item
+                        tempConfig[f"{key}_{i + 1}_VALUE"] = item
+            else:
+                tempConfig[key] = value
+        print(tempConfig)
+        return tempConfig
+
+    def parse_config_with_gpt(self, config: dict):
+        # Do the same as parse_config_with_lut, but use GPT-3 to lookup the values
+        pass
+        
+
     def find_and_replace_single(self, config: dict):
         # config: requires UID field
         try:
@@ -103,8 +129,9 @@ class docx_template():
             return
         tempConfig = config
         tempDocx = copy.deepcopy(self.TEMPLATE)
-        tempLUT = self.LUT
-        
+        tempConfig = self.parse_config_with_lut(tempConfig)
+    
+
         for key, value in tempConfig.items():
             reMFR = re.compile(r"\$\{" + key + r"\}")
             for paragraph in tempDocx.paragraphs:
@@ -114,12 +141,15 @@ class docx_template():
         savePath = f"{self.OUTPUT_DIR}/{tempConfig['UID']}.docx"
         tempDocx.save(savePath)
         self.logger.log(f"└-- Saved document at `{self.logger.format(savePath, 2)}`", "OK")
+        return savePath
 
     def find_and_replace_folder(self, config_path: str, parser: callable = json_to_dict):
         # Obtain all .json files from config directory
+        outputList = []
         for config_file in glob.glob(f"{config_path}/*.json"):
             self.logger.log(f"Processing `{self.logger.format(config_file, 2)}` configuration file.", "INFO")
-            self.find_and_replace_single(parser(config_file))
+            outputList.append(self.find_and_replace_single(parser(config_file)))
+        return outputList
         
     def __exit__(self):
         print("Exiting...")

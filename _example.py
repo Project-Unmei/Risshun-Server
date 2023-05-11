@@ -7,12 +7,18 @@ import pylumber as log
 
 from dotenv import dotenv_values
 
+currDir = os.path.dirname(os.path.realpath(__file__))
+
 # Check .env file exists
-if not os.path.exists(".env.example"):
+if not os.path.exists(f"{currDir}/.env.example"):
     raise Exception("Please create a .env file with the required environment variables. See .env.example for an example.")
 
 # Load environment variables
-ENV = dict(dotenv_values(".env.example"))
+ENV = dict(dotenv_values(f"{currDir}/.env.example"))
+for key, value in ENV.items():
+    ENV[key] = f"{currDir}/{value}"
+
+print(ENV)
 
 # Get current time
 start = timeit.default_timer()
