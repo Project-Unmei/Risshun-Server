@@ -1,3 +1,6 @@
 .env
 dist
 build
+.DS_Store
+Example/Output/*
+autocv/__pycache__/*

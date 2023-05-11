@@ -10,6 +10,13 @@ import copy
 from docx import Document
 from dotenv import dotenv_values
 
+# Optional Dependencies
+try:
+    import openai
+except:
+    print("OpenAI API not found. Please install the package if you wish to use it.")
+
+
 def json_to_dict(json_path: str):
     with open(json_path) as f:
         return json.load(f)
@@ -96,6 +103,10 @@ class docx_template():
             self.logger.log(f"Created output directory: {output_dir}")
         self.OUTPUT_DIR = output_dir
 
+    def keyword_extraction(self, text: str):
+        # Extract keywords from text
+        pass
+
     def parse_config_with_lut(self, config: dict):
         # Modify the config dict so for every value which is a list, use the LUT to lookup and create
         # new key-value pairs within this config
@@ -115,8 +126,17 @@ class docx_template():
         print(tempConfig)
         return tempConfig
 
-    def parse_config_with_gpt(self, config: dict):
+    def parse_config_with_gpt(self, config: dict, openai_key: str, gpt_model: str = "gpt-3.5-turbo"):
         # Do the same as parse_config_with_lut, but use GPT-3 to lookup the values
+        # Requires the required library and your own API code. (Promise wont mess with your API)
+        openai.api_key = openai_key
+        response = openai.ChatCompletion.create(
+            model=gpt_model,
+            messages=[
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": "Who won the world series in 2020?"},
+            ]
+        )
         pass
         
 

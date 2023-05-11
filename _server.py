@@ -1,7 +1,9 @@
 import autocv
 import os
 import json
-from flask import Flask, request, abort, jsonify, render_template, send_file
+from flask_cors import CORS
+
+from flask import Flask, request, abort, jsonify, render_template, send_file, make_response
 from dotenv import dotenv_values
 
 # Check .env file exists
@@ -19,6 +21,7 @@ for key, value in ENV.items():
 CVGeneration = autocv.docx_template(autocv.csv_to_dict(ENV["LUT_PATH"]), ENV["TEMPLATE_PATH"], ENV["OUTPUT_DIR"])
 
 app = Flask(__name__)
+CORS(app)
 
 # Replace with your actual API key
 API_KEY = 'TESTAPIKEY'
@@ -27,7 +30,20 @@ API_KEY = 'TESTAPIKEY'
 def home():
     return render_template('index.html')
 
-@app.route('/', methods=['POST'])   
+@app.route('/api/cv/return', methods=['GET'])
+def return_cv():
+    # Check if the 'X-API-KEY' header is present and contains the correct API key
+    if request.headers.get('X-API-KEY') == API_KEY:
+        tempID = request.args.get('id')
+        # Check if the output directory contains the file
+        if os.path.exists(f"{ENV['OUTPUT_DIR']}/{tempID}.docx"):
+            return send_file(f"{ENV['OUTPUT_DIR']}/{tempID}.docx", as_attachment=True)
+        else:
+            return jsonify({"message": "File not found"}), 404
+    else:
+        abort(401)
+
+@app.route('/api/cv/generate', methods=['POST'])   
 def handle_request():
     # Check if the 'X-API-KEY' header is present and contains the correct API key
     if request.headers.get('X-API-KEY') == API_KEY:
@@ -39,11 +55,13 @@ def handle_request():
             except:
                 print("Error: AutoCV has failed in generation.")
                 return jsonify({"message": "AutoCV has failed in generation."}), 500
-            return send_file(outputPath, as_attachment=True)
+            return jsonify({"message": f"CV Generated, use get request at /api/cv/return?id={json_payload['UID']}"}), 200
         else:
             return jsonify({"message": "Missing JSON in request"}), 400
     else:
         abort(401)
+
+
 
 if __name__ == '__main__':
     app.run(port=6969, debug=True)
