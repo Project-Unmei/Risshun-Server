@@ -3,4 +3,5 @@ dist
 build
 .DS_Store
 Example/Output/*
-autocv/__pycache__/*
+autocv/__pycache__/
+__pycache__/
