@@ -5,3 +5,6 @@ build
 Example/Output/*
 autocv/__pycache__/
 __pycache__/
+_test.py
+_test1.py
+

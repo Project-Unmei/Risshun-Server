@@ -12,6 +12,7 @@ from dotenv import dotenv_values
 
 from . import parser
 from . import extractor
+from . import generator
 
 # Credits to Scanny for the code below:
 def paragraph_replace_text(paragraph, regex, replace_str):

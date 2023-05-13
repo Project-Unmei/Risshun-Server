@@ -3,7 +3,8 @@ Modules for parsing the input file utilizing LUTs, GPT, and other methods.
 """
 
 import json
-import openai
+import fitz
+import docx
 from . import extractor
 
 
@@ -22,37 +23,20 @@ def csv_to_dict(file_path: str):
 def json_to_dict(json_path: str):
     with open(json_path) as f:
         return json.load(f)
-
-
-
-def parse_config_with_lut(self, config: dict):
-    # Modify the config dict so for every value which is a list, use the LUT to lookup and create
-    # new key-value pairs within this config
-    tempConfig = {}
-    print(config)
-    for key, value in config.items():
-        if isinstance(value, list):
-            for i, item in enumerate(value):
-                if item in self.LUT.keys():
-                    tempConfig[f"{key}_{i + 1}_KEY"] = item
-                    tempConfig[f"{key}_{i + 1}_VALUE"] = self.LUT[item]
-                else:
-                    self.logger.log(f"└-- {self.logger.format(item, 2)} not found in LUT.", 2)
-                    tempConfig[f"{key}_{i + 1}_KEY"] = item
-                    tempConfig[f"{key}_{i + 1}_VALUE"] = item
-        else:
-            tempConfig[key] = value
-    return tempConfig
-
-def parse_config_with_gpt(self, config: dict, openai_key: str, gpt_model: str = "gpt-3.5-turbo"):
-    # Do the same as parse_config_with_lut, but use GPT-3 to lookup the values
-    # Requires the required library and your own API code. (Promise wont mess with your API)
-    openai.api_key = openai_key
-    response = openai.ChatCompletion.create(
-        model=gpt_model,
-        messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": "Who won the world series in 2020?"},
-        ]
-    )
+    
+def docx_to_string(docx_path: str):
     pass
+
+def pdf_to_string(pdf_path: str):
+    doc = fitz.open(pdf_path)
+    tempText = ""
+    for page in doc:
+        tempText += page.get_text("text")
+    return tempText
+
+def docx_to_string(doc_path: str):
+    doc = docx.Document(doc_path)
+    tempText = ""
+    for para in doc.paragraphs:
+        tempText += para.text.strip()
+    return tempText
