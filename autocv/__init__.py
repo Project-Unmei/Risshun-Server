@@ -10,28 +10,8 @@ import copy
 from docx import Document
 from dotenv import dotenv_values
 
-# Optional Dependencies
-try:
-    import openai
-except:
-    print("OpenAI API not found. Please install the package if you wish to use it.")
-
-
-def json_to_dict(json_path: str):
-    with open(json_path) as f:
-        return json.load(f)
-
-def csv_to_dict(file_path: str):
-    tempDict = {}
-    with open(file_path) as csvFile:
-        for line in csvFile:
-            # Get index of first comma
-            firstComma = line.find(",")
-            tempValue = line[firstComma+1:].strip()
-            tempValue = tempValue[1:-1] if tempValue.startswith("\"") and tempValue.endswith("\"") else tempValue
-            tempDict[line[:firstComma]] = tempValue
-    print(tempDict)
-    return tempDict
+from . import parser
+from . import extractor
 
 # Credits to Scanny for the code below:
 def paragraph_replace_text(paragraph, regex, replace_str):
@@ -111,6 +91,7 @@ class docx_template():
         # Modify the config dict so for every value which is a list, use the LUT to lookup and create
         # new key-value pairs within this config
         tempConfig = {}
+        print(config)
         for key, value in config.items():
             if isinstance(value, list):
                 for i, item in enumerate(value):
@@ -123,7 +104,6 @@ class docx_template():
                         tempConfig[f"{key}_{i + 1}_VALUE"] = item
             else:
                 tempConfig[key] = value
-        print(tempConfig)
         return tempConfig
 
     def parse_config_with_gpt(self, config: dict, openai_key: str, gpt_model: str = "gpt-3.5-turbo"):
@@ -138,7 +118,6 @@ class docx_template():
             ]
         )
         pass
-        
 
     def find_and_replace_single(self, config: dict):
         # config: requires UID field
@@ -151,7 +130,6 @@ class docx_template():
         tempDocx = copy.deepcopy(self.TEMPLATE)
         tempConfig = self.parse_config_with_lut(tempConfig)
     
-
         for key, value in tempConfig.items():
             reMFR = re.compile(r"\$\{" + key + r"\}")
             for paragraph in tempDocx.paragraphs:
@@ -163,7 +141,7 @@ class docx_template():
         self.logger.log(f"└-- Saved document at `{self.logger.format(savePath, 2)}`", "OK")
         return savePath
 
-    def find_and_replace_folder(self, config_path: str, parser: callable = json_to_dict):
+    def find_and_replace_folder(self, config_path: str, parser: callable = parser.json_to_dict):
         # Obtain all .json files from config directory
         outputList = []
         for config_file in glob.glob(f"{config_path}/*.json"):

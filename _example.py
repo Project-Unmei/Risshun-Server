@@ -23,8 +23,8 @@ print(ENV)
 # Get current time
 start = timeit.default_timer()
 # Iterate through all .json files in the config directory
-CVGeneration = autocv.docx_template(autocv.csv_to_dict(ENV["LUT_PATH"]), ENV["TEMPLATE_PATH"], ENV["OUTPUT_DIR"])
-CVGeneration.find_and_replace_folder(f"{ENV['CONFIG_DIR']}")
+CVGeneration = autocv.docx_template(autocv.parser.csv_to_dict(ENV["LUT_PATH"]), ENV["TEMPLATE_PATH"], ENV["OUTPUT_DIR"])
+CVGeneration.find_and_replace_folder(f"{ENV['CONFIG_DIR']}", autocv.parser.json_to_dict)
 
 # Get current time
 stop = timeit.default_timer()
