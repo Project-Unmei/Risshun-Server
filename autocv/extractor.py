@@ -55,7 +55,8 @@ finally:
                                 cover letter, so avoid repetition among paragraphs, assume paragraphs will be in order. 
                                 The tone of the paragraphs will be formal, and avoid repeating traits already mentioned 
                                 in the resume. Respond text should be formatted like a json, where key is the name of 
-                                the skill without enumeration or the word skill, and value is the paragraph."
+                                the skill without enumeration or the word skill, and value is the paragraph. DO NOT MAKE
+                                UP SKILLS THAT ARE NOT IN MY RESUME."
                                 """}
             ]
         )
