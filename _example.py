@@ -10,21 +10,26 @@ from dotenv import dotenv_values
 currDir = os.path.dirname(os.path.realpath(__file__))
 
 # Check .env file exists
-if not os.path.exists(f"{currDir}/.env.example"):
+if not os.path.exists(f"{currDir}/.env"):
     raise Exception("Please create a .env file with the required environment variables. See .env.example for an example.")
 
 # Load environment variables
-ENV = dict(dotenv_values(f"{currDir}/.env.example"))
-for key, value in ENV.items():
-    ENV[key] = f"{currDir}/{value}"
-
-print(ENV)
+ENV = dict(dotenv_values(f"{currDir}/.env"))
+#for key, value in ENV.items():
+#    ENV[key] = f"{currDir}/{value}"
 
 # Get current time
 start = timeit.default_timer()
 # Iterate through all .json files in the config directory
-CVGeneration = autocv.docx_template(autocv.parser.csv_to_dict(ENV["LUT_PATH"]), ENV["TEMPLATE_PATH"], ENV["OUTPUT_DIR"])
-CVGeneration.find_and_replace_folder(f"{ENV['CONFIG_DIR']}", autocv.parser.json_to_dict)
+CVGeneration = autocv.docx_template(ENV["TEMPLATE_PATH"],
+                                    ENV["RESUME_PATH"],
+                                    ENV["OUTPUT_DIR"], 
+                                    openai_key=ENV["OPENAI_KEY"], 
+                                    silent=False)
+genOutput = CVGeneration.find_and_replace_folder(f"{ENV['CONFIG_DIR']}", autocv.parser.json_path_to_dict)
+
+print(genOutput)
+
 
 # Get current time
 stop = timeit.default_timer()

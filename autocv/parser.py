@@ -20,12 +20,12 @@ def csv_to_dict(file_path: str):
     print(tempDict)
     return tempDict
 
-def json_to_dict(json_path: str):
+def json_path_to_dict(json_path: str):
     with open(json_path) as f:
         return json.load(f)
-    
-def docx_to_string(docx_path: str):
-    pass
+
+def json_str_to_dict(json_str: str):
+    return json.loads(json_str)
 
 def pdf_to_string(pdf_path: str):
     doc = fitz.open(pdf_path)

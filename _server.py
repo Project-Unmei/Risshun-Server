@@ -8,17 +8,20 @@ from dotenv import dotenv_values
 
 # Check .env file exists
 currDir = os.path.dirname(os.path.realpath(__file__))
-if not os.path.exists(f"{currDir}/.env.example"):
+if not os.path.exists(f"{currDir}/.env"):
     raise Exception("Please create a .env file with the required environment variables. See .env.example for an example.")
 
 # Load environment variables, convert them to absolute path
-ENV = dict(dotenv_values(f"{currDir}/.env.example"))
-for key, value in ENV.items():
-    ENV[key] = f"{currDir}/{value}"
-
+ENV = dict(dotenv_values(f"{currDir}/.env"))
+#for key, value in ENV.items():
+#    ENV[key] = f"{currDir}/{value}"
 
 # Creates the object from autocv for generation
-CVGeneration = autocv.docx_template(autocv.csv_to_dict(ENV["LUT_PATH"]), ENV["TEMPLATE_PATH"], ENV["OUTPUT_DIR"])
+CVGeneration = autocv.docx_template(ENV["TEMPLATE_PATH"],
+                                    ENV["RESUME_PATH"],
+                                    ENV["OUTPUT_DIR"], 
+                                    openai_key=ENV["OPENAI_KEY"], 
+                                    silent=False)
 
 app = Flask(__name__)
 CORS(app)

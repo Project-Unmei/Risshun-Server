@@ -1,7 +1,11 @@
 {
-    "PID":              "317408",
-    "JOB_TITAL":        "Financial Analyst",
-    "COMPANY_NAME":     "Capital One",
-    "JOB_LOCATION":     "ON - Toronto",
-    "SKILLS":           ["Teamwork", "Being Nice?", "Machine Learning"]
+    "UID":              "317408",
+    "TYPE":             "gpt",
+    "DATA": {
+        "TITLE":        "Business Analyst - Projects",
+        "COMPANY":      "CWB Financial Group",
+        "JOB_DESC":     "The Business Analyst will provide an essential role in the Projects Team to support the Business and its systems: Support the execution of key projects and other strategic initiatives Collaborate with business and project stakeholders to understand gaps/opportunities and recommend solutions to enable the achievement of project and organizational goals Participate in business user testing to ensure the quality of each production release",
+        "JOB_RESP":     "Validate and document business requirements, review enhancements and release notes, and track bug and other issues to resolution Collaborate with internal and external stakeholders and work alongside subject matter experts to deliver on business objectives Work with project stakeholders to validate requirements and analyze models via techniques such as reviews and walkthroughs. Think creatively and propose new solutions Support system users, and exercise judgment to identify, diagnose, and solve system problems Support the system access provisioning processes according to guidelines and policies Use business intelligence tools (e.g., Power BI) to run and tailor reports",
+        "REQ_SKILL":    "Currently enrolled at a Canadian post-secondary institution with a focus in Business, Project Management, Information Technology or an equivalent Excellent verbal and written communication skills Strong interpersonal skills Analytical and creative problem solving skills with the ability to collect, organize, analyze, and disseminate significant amounts of information with attention to detail and accuracy Effective time management and prioritization Strong MS Office skills - Word, Outlook, Excel and PowerPoint Able to work independently"
+    }
 }

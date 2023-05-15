@@ -14,6 +14,22 @@ from . import parser
 from . import extractor
 from . import generator
 
+# Dictionary of Extractors and Generators:
+# Key: Name of extractor
+# Value: Extractor object
+MODEL = {
+    "nltk_lut": [extractor.extract_text_with_nlp, generator.generate_para_with_lut],
+    "rake_lut": [extractor.extract_text_with_rake, generator.generate_para_with_lut],
+    "gpt": [generator.generate_para_with_gpt]
+}
+
+MODEL_REQ = {
+    "nltk_lut": ["RESUME", "TEMPLATE", "LUT"],
+    "rake_lut": ["RESUME", "TEMPLATE", "LUT"],
+    "gpt": ["RESUME", "OPENAI_KEY"]
+}
+
+
 # Credits to Scanny for the code below:
 def paragraph_replace_text(paragraph, regex, replace_str):
     """Return `paragraph` after replacing all matches for `regex` with `replace_str`.
@@ -69,24 +85,44 @@ def paragraph_replace_text(paragraph, regex, replace_str):
 
 
 class docx_template():
-    def __init__(self, lut: dict, template: str, output_dir: str = "output", silent: bool = False):
+    def __init__(self, template_path: str, resume_path: str, output_dir: str = "output", 
+                   lut: dict = None, silent: bool = False, openai_key: str = None):
         # Loading template docx file for editing
         self.logger = pylumber.lumberjack(silent=False)
-        self.logger.log(f"Loading template `{self.logger.format(template, 2)}`", "INFO")
-        
+        self.logger.log(f"Loading template `{self.logger.format(template_path, 2)}`", "INFO")
+
         # Setting self variables
-        self.LUT = lut
-        self.TEMPLATE = Document(template)
+        self.RESOURCE = {
+            "RESUME": None,
+            "TEMPLATE": None,
+            "LUT": lut,
+            "OPENAI_KEY": openai_key
+        }
+
+        # Check if the extension of resume_path is .docx or .pdf and parses it to string
+        try:
+            if resume_path.endswith(".docx"):
+                self.RESOURCE["RESUME"] = parser.docx_to_string(resume_path)
+            elif resume_path.endswith(".pdf"):
+                self.RESOURCE["RESUME"] = parser.pdf_to_string(resume_path)
+            else:
+                raise Exception("Invalid resume file extension.")
+        except:
+            self.logger.log(f"└-- Error parsing resume file: {self.logger.format(resume_path, 2)}", 2)
+            raise Exception("Error parsing resume file.")
         
+        # Convert the template path to a Document object
+        try:
+            self.RESOURCE["TEMPLATE"] = Document(template_path)
+        except:
+            self.logger.log(f"└-- Error parsing template file: {self.logger.format(template_path, 2)}", 2)
+            raise Exception("Error parsing template file.")
+
         # Check to see if output directory exists
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
             self.logger.log(f"Created output directory: {output_dir}")
         self.OUTPUT_DIR = output_dir
-
-    def keyword_extraction(self, text: str):
-        # Extract keywords from text
-        pass
 
     def parse_config_with_lut(self, config: dict):
         # Modify the config dict so for every value which is a list, use the LUT to lookup and create
@@ -107,30 +143,55 @@ class docx_template():
                 tempConfig[key] = value
         return tempConfig
 
-    def parse_config_with_gpt(self, config: dict, openai_key: str, gpt_model: str = "gpt-3.5-turbo"):
-        # Do the same as parse_config_with_lut, but use GPT-3 to lookup the values
-        # Requires the required library and your own API code. (Promise wont mess with your API)
-        openai.api_key = openai_key
-        response = openai.ChatCompletion.create(
-            model=gpt_model,
-            messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": "Who won the world series in 2020?"},
-            ]
-        )
-        pass
-
     def find_and_replace_single(self, config: dict):
         # config: requires UID field
         try:
             assert "UID" in config.keys()
+            assert "TYPE" in config.keys()
+            assert "DATA" in config.keys()
         except AssertionError:
-            self.logger.log(f"└-- {self.logger.format('UID', 2)} field not found in config file.", 2)
-            return
+            self.logger.log(f"└-- Fundamental fields UID and TYPE not found in config file.", 2)
+            return (0, "Fundamental fields UID and TYPE not found in config file.")
+        
+        # Making copy of config and template
         tempConfig = config
-        tempDocx = copy.deepcopy(self.TEMPLATE)
-        tempConfig = self.parse_config_with_lut(tempConfig)
+        tempDocx = copy.deepcopy(self.RESOURCE['TEMPLATE'])
+        
+        # Check config to see type of config
+        configType = tempConfig["TYPE"]
+        if configType not in MODEL_REQ.keys():
+            self.logger.log(f"└-- Invalid config type: {self.logger.format(configType, 2)}", 2)
+            return (0, f"Invalid config type: {configType}")
+        else:
+            # Check if all required fields are present
+            for field in MODEL_REQ[configType]:
+                if field == None:
+                    self.logger.log(f"└-- Missing required inputs for type: {self.logger.format(configType, 2)}", 2)
+                    return (0, f"Missing required inputs for type: {configType}")
+
+        # Extracting job details:
+        combined_job_desc = "\n".join([x for x in tempConfig["DATA"].values()])
+        if configType == "gpt":
+            if self.RESOURCE["OPENAI_KEY"] == None:
+                self.logger.log(f"└-- OpenAI key not found.", 2)
+                return (0, "OpenAI key not found.")
+            skillPara, tokenCost = extractor.extract__and_generate_with_gpt(combined_job_desc, self.RESOURCE['RESUME'], self.RESOURCE["OPENAI_KEY"])
+        else:
+            return (0, "Invalid config type, this path has not been programmed.")
+        
+        tempDict = {}
+        for i, (key, value) in enumerate(skillPara.items()):
+            tempDict[f"SKILL_{i + 1}_KEY"] = key.lower()
+            tempDict[f"SKILL_{i + 1}_VALUE"] = value
+            
+        dataDict = tempDict | tempConfig['DATA']
+        for key, value in dataDict.items():
+            reMFR = re.compile(r"\$\{" + key + r"\}")
+            for paragraph in tempDocx.paragraphs:
+                paragraph = paragraph_replace_text(paragraph, reMFR, value)
     
+        #tempConfig = self.parse_config_with_lut(tempConfig)
+
         for key, value in tempConfig.items():
             reMFR = re.compile(r"\$\{" + key + r"\}")
             for paragraph in tempDocx.paragraphs:
@@ -140,12 +201,12 @@ class docx_template():
         savePath = f"{self.OUTPUT_DIR}/{tempConfig['UID']}.docx"
         tempDocx.save(savePath)
         self.logger.log(f"└-- Saved document at `{self.logger.format(savePath, 2)}`", "OK")
-        return savePath
+        return (1, savePath)
 
-    def find_and_replace_folder(self, config_path: str, parser: callable = parser.json_to_dict):
+    def find_and_replace_folder(self, config_dir: str, parser: callable = parser.json_path_to_dict):
         # Obtain all .json files from config directory
         outputList = []
-        for config_file in glob.glob(f"{config_path}/*.json"):
+        for config_file in glob.glob(f"{config_dir}/*.json"):
             self.logger.log(f"Processing `{self.logger.format(config_file, 2)}` configuration file.", "INFO")
             outputList.append(self.find_and_replace_single(parser(config_file)))
         return outputList
