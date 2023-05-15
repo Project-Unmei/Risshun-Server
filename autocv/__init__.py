@@ -198,7 +198,7 @@ class docx_template():
                 paragraph = paragraph_replace_text(paragraph, reMFR, value)
 
         # Save the edited document within output directory
-        savePath = f"{self.OUTPUT_DIR}/{tempConfig['UID']}.docx"
+        savePath = f"{self.OUTPUT_DIR}/{tempConfig['UID']} - {tempConfig['DATA']['TITLE']}.docx"
         tempDocx.save(savePath)
         self.logger.log(f"└-- Saved document at `{self.logger.format(savePath, 2)}`", "OK")
         return (1, savePath)
