@@ -51,7 +51,7 @@ finally:
                 {"role": "user", 
                  "content": f"""Taking into account this job description and my resume, generate {para_count} distinctly 
                                 named skills (preferably soft skills) and write me a cover letter paragraphs for each 
-                                skill, each of around 50 words. Note that all three paragraphs will eventually be in one 
+                                skill, each of around 80 words. Note that all three paragraphs will eventually be in one 
                                 cover letter, so avoid repetition among paragraphs, assume paragraphs will be in order. 
                                 The tone of the paragraphs will be formal, and avoid repeating traits already mentioned 
                                 in the resume. Respond text should be formatted like a json, where key is the name of 
