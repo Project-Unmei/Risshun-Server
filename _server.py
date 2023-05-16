@@ -55,8 +55,10 @@ def handle_request():
             json_payload = request.get_json()
             try:
                 outputPath = CVGeneration.find_and_replace_single(json_payload)
-            except:
+            except Exception as e:
                 print("Error: AutoCV has failed in generation.")
+                # Print the error
+                print(e)
                 return jsonify({"message": "AutoCV has failed in generation."}), 500
             return jsonify({"message": f"CV Generated, use get request at /api/cv/return?id={json_payload['UID']}"}), 200
         else:

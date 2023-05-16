@@ -177,6 +177,7 @@ class docx_template():
                 return (0, "OpenAI key not found.")
             skillPara, tokenCost = extractor.extract__and_generate_with_gpt(combined_job_desc, self.RESOURCE['RESUME'], self.RESOURCE["OPENAI_KEY"])
         else:
+            self.logger.log(f"└-- Invalid config type.", 2)
             return (0, "Invalid config type, this path has not been programmed.")
         
         tempDict = {}
