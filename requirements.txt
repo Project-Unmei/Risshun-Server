@@ -1,0 +1,8 @@
+python-dotenv
+python-docx
+fitz
+flask
+pylumber
+docx
+PyMuPDF
+openai
