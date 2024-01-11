@@ -25,7 +25,8 @@ finally:
 # Uses GPT-3 to power nlp text extraction and paragraph generation, this is 
 # placed into one function/module to minimize costs for generation.
 try:
-    import openai
+    from openai import OpenAI
+    import re
 except:
     def extract__and_generate_with_gpt(
             job_desc: str, resume: str, openai_api_key: str, 
@@ -39,41 +40,37 @@ finally:
     def extract__and_generate_with_gpt(
             job_desc: str, resume: str, openai_api_key: str, 
             para_count: int = 3, gpt_model: str = "gpt-3.5-turbo"):
-        openai.api_key = openai_api_key
-        response = openai.ChatCompletion.create(
+        openai_client = OpenAI(api_key=openai_api_key)
+        response = openai_client.chat.completions.create(
             model=gpt_model,
             messages=[
-                {"role": "system", 
-                 "content": f"""You are a helpful assistant who will help me generate a cover letter paragraph based on 
-                                the given skill, my resume, and the job description. Know that for every prompt, assume 
-                                that there is already an introduction and ending paragraphs written. Here is the job 
-                                description: {job_desc}; Here is my resume: {resume}."""},
+                {"role":    "system", 
+                 "content": f"You are a helpful assistant who will help me generate a cover letter paragraph based on the given skill, my resume, and the job description. Know that for every prompt, assume that there is already an introduction and ending paragraphs written. Here is the job positing: {job_desc}; Here is my resume: {resume}."},
+                
                 {"role": "user", 
-                 "content": f"""Taking into account this job description and my resume, generate {para_count} distinctly 
-                                named skills (preferably soft skills) and write me a cover letter paragraphs for each 
-                                skill, each of around 80 words. 
-                                
-                                Note that all three paragraphs will eventually be in one 
-                                cover letter, so avoid repetition among paragraphs, assume paragraphs will be in order ,
-                                and try to make the paragraphs flow well together, so dont make it seem like dot jots. 
-                                Incorporate some phrases or names from the job description and resume into the 
-                                paragraphs if possible, but do not force it. 
-                                
-                                The tone of the paragraphs will be formal, but not too serious, and avoid repeating 
-                                traits already mentioned in the resume, you can make simple implies from the resume. 
-                                Make sure that the paragraphs are not too similar to each other. Try to keep the 
-                                beginning of each paragraph unique, and try to make the paragraphs flow well together.
-                                
-                                Respond text should be formatted like a json, where key is the name of 
-                                the skill without enumeration or the word skill, and value is the paragraph. DO NOT MAKE
-                                UP SKILLS THAT ARE NOT IN MY RESUME."
-                                """}
+                 "content": f"""Taking into account this job description and my resume, generate {para_count} distinctly named skills (preferably soft skills) and write me a cover letter paragraphs for each skill, each of around 80 words. 
+                 
+                 Note that all three paragraphs will eventually be in one cover letter, so avoid repetition among paragraphs, assume paragraphs will be in order, and try to make the paragraphs flow well together, so dont make it seem like dot jots. Incorporate some phrases or names from the job description and resume into the paragraphs if possible, but do not force it.
+
+                 The tone of the paragraphs will be formal, but not too serious, and avoid repeating traits already mentioned in the resume, you can make simple implies from the resume. Make sure that the paragraphs are not too similar to each other. Try to keep the beginning of each paragraph unique, and try to make the paragraphs flow well together.
+                 
+                 Response text should be formatted like a json in key value pairs, where the key is the skill and nothing else, and value being the paragraph. DO NOT MAKE UP SKILLS THAT ARE NOT IN MY RESUME."
+                 """}
             ]
         )
-        
-        para = parser.json_str_to_dict(response['choices'][0]['message']['content'])
-        token_cost = response['usage']
-        return [para, token_cost]
+
+        # print(response.choices[0].message.content)
+        para = parser.json_str_to_dict(response.choices[0].message.content)
+
+        # LLM may result undesired characters, remove them
+        updated_data = {}
+        for key, value in para.items():
+            new_key = re.sub(r"Skill\s\d+:\s?", '', key, flags=re.IGNORECASE)
+            updated_data[new_key] = value
+
+
+        token_cost = response.usage.total_tokens
+        return [updated_data, token_cost]
         
 
 

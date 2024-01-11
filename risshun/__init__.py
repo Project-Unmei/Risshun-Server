@@ -170,12 +170,17 @@ class docx_template():
                     return (0, f"Missing required inputs for type: {configType}")
 
         # Extracting job details:
-        combined_job_desc = "\n".join([x for x in tempConfig["DATA"].values()])
+        combined_job_desc = ""
+        for key, value in tempConfig["DATA"].items():
+            combined_job_desc += f"{key}: {value}\n"
+
         if configType == "gpt":
             if self.RESOURCE["OPENAI_KEY"] == None:
                 self.logger.log(f"└-- OpenAI key not found.", 2)
                 return (0, "OpenAI key not found.")
-            skillPara, tokenCost = extractor.extract__and_generate_with_gpt(combined_job_desc, self.RESOURCE['RESUME'], self.RESOURCE["OPENAI_KEY"])
+            modelRequested = "gpt-3.5-turbo"
+            skillPara, tokenCost = extractor.extract__and_generate_with_gpt(combined_job_desc, self.RESOURCE['RESUME'], self.RESOURCE["OPENAI_KEY"], gpt_model=modelRequested)
+            self.logger.log(f"└-- Generated paragraphs with {modelRequested}, cost: {tokenCost}", "OK")
         else:
             self.logger.log(f"└-- Invalid config type.", 2)
             return (0, "Invalid config type, this path has not been programmed.")

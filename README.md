@@ -36,7 +36,7 @@ The JSON Config File Structure:
         "COMPANY": "...",
         "JOB_SUM": "...",
         "JOB_RESP": "...",
-        "REQ_SKILL": "...",
+        "JOB_SKILL": "...",
         ...
     }
 }

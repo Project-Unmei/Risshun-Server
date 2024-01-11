@@ -1,4 +1,4 @@
-import autocv
+import risshun
 import os
 import json
 from flask_cors import CORS
@@ -17,7 +17,7 @@ ENV = dict(dotenv_values(f"{currDir}/.env"))
 #    ENV[key] = f"{currDir}/{value}"
 
 # Creates the object from autocv for generation
-CVGeneration = autocv.docx_template(ENV["TEMPLATE_PATH"],
+CVGeneration = risshun.docx_template(ENV["TEMPLATE_PATH"],
                                     ENV["RESUME_PATH"],
                                     ENV["OUTPUT_DIR"], 
                                     openai_key=ENV["OPENAI_KEY"], 
