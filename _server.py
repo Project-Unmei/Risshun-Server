@@ -31,7 +31,7 @@ API_KEY = 'TESTAPIKEY'
 
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('index.html')
+    return render_template("local-portal/index.html")
 
 @app.route('/api/cv/return', methods=['GET'])
 def return_cv():
