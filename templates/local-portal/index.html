@@ -2,11 +2,25 @@
 
 <html>
 <head>
-    <title>Data Input Site - Risshun</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Risshun</title>
+    <script src="script.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Noto+Serif+JP&family=Noto+Serif&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href= "{{ url_for('static', filename='colors.css') }}" />
+    <link rel="stylesheet" type="text/css" href= "{{ url_for('static', filename='local-portal/style.css') }}" />
 </head>
 
 <body>
-    <h1>Testing Connection</h1>
+    <div class="form-wrapper">
+        <h1>Risshun-Generation</h1>
+        <form id="Generation Form">
+            <label for="name">Name:</label>
+            <input class="input-field" type="text" id="name" name="name"><br><br>
+
+            <label for="email">Email Address:</label>
+            <input class="input-field" type="email" id="email" name="email"><br><br>
+
+            <input id="submit-button" type="submit" value="SUBMIT">
+        </form>
+    </div>
 </body>
 </html>

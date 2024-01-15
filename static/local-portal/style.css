@@ -1,0 +1,52 @@
+body {
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+
+    background-color: var(--palette-apricot);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-wrapper {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--palette-eggplant);
+}
+
+.form-wrapper > h1 {
+    font-family: 'Noto Serif', serif;
+    font-weight: 100;
+    font-size: 3rem;
+    color: var(--palette-eggplant);
+    text-align: center;
+    margin: 0;
+    margin-bottom: 2rem;
+}
+
+form > label {
+    font-family: 'Noto Serif', serif;
+    font-weight: 100;
+    color: var(--palette-eggplant);
+}
+
+form > input {
+    margin-bottom: -1rem;
+    background-color: transparent;
+}
+
+.input-field {
+    border: none;
+}
+
+#submit-button {
+    font-family: 'Courier Prime', monospace;
+}
+
+#submit-button:hover {
+    background-color: var(--palette-eggplant);
+    color: var(--palette-apricot);
+    cursor: pointer;
+}
+
