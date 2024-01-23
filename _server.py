@@ -52,24 +52,9 @@ def return_cv():
 
 
 
-@app.route('/api/test', methods=['POST'])
-def test():
-    # Check if the 'X-API-KEY' header is present and contains the correct API key
-    if request.headers.get('X-API-KEY') == API_KEY:
-        # Check if the request contains a JSON payload
-        if request.is_json:
-            json_payload = request.get_json()
-            print(json_payload)
-            return jsonify({"message": "JSON received!"}), 200
-        else:
-            return jsonify({"message": "Missing JSON in request"}), 400
-    else:
-        abort(401)
-
-
-
 @app.route('/api/cv/generate', methods=['POST'])   
 def handle_request():
+    
     # Check if the 'X-API-KEY' header is present and contains the correct API key
     if request.headers.get('X-API-KEY') == API_KEY:
         # Check if the request contains a JSON payload

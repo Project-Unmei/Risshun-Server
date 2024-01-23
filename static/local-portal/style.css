@@ -12,7 +12,6 @@ body {
 .form-wrapper {
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--palette-eggplant);
 }
 
 .form-wrapper > h1 {
@@ -29,19 +28,56 @@ form > label {
     font-family: 'Noto Serif', serif;
     font-weight: 100;
     color: var(--palette-eggplant);
+    margin-top: 2rem;
 }
 
-form > input {
-    margin-bottom: -1rem;
-    background-color: transparent;
+fieldset {
+    border-radius: 1rem;
+    border-color: var(--palette-atomic_tangerine);
+}
+
+fieldset > legend {
+    font-family: 'Noto Serif', serif;
+    font-weight: 100;
+    color: var(--palette-eggplant);
+    margin-top: 2rem;
+}
+
+fieldset > label {
+    font-family: 'Noto Serif', serif;
+    font-weight: 100;
+    color: var(--palette-salmon);
+    margin-top: 2rem;
 }
 
 .input-field {
+    width: calc(100% - 1.5rem);
+    padding: 0;
     border: none;
+    background-color: var(--palette-atomic_tangerine);
+    margin: 2px;
+    color: var(--palette-eggplant);
+    padding: 10px;
+    
+    border-radius: 5px;
+    box-shadow:  -2.5px 2.5px 5px #cb8b76,
+                    2.5px -2.5px 5px var(--palette-apricot);
+}
+
+textarea {
+    height: 10rem;
+    resize: none;
+}
+
+.input-field:focus {
+    background-color: var(--palette-atomic_tangerine);
+    outline: none;
 }
 
 #submit-button {
     font-family: 'Courier Prime', monospace;
+    background-color: var(--palette-eggplant);
+    color: var(--palette-salmon)
 }
 
 #submit-button:hover {

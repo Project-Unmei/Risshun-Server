@@ -3,24 +3,40 @@
 <html>
 <head>
     <title>Risshun</title>
-    <script src="script.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Noto+Serif+JP&family=Noto+Serif&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href= "{{ url_for('static', filename='colors.css') }}" />
-    <link rel="stylesheet" type="text/css" href= "{{ url_for('static', filename='local-portal/style.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='colors.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='local-portal/style.css') }}" />
 </head>
 
 <body>
     <div class="form-wrapper">
-        <h1>Risshun-Generation</h1>
-        <form id="Generation Form">
-            <label for="name">Name:</label>
-            <input class="input-field" type="text" id="name" name="name"><br><br>
+        <!-- <h1>Risshun-Generation</h1> -->
+        <form id="info-form">
+            <label for="uid">UID:</label>
+            <input class="input-field" type="text" id="uid" name="name"><br><br>
 
-            <label for="email">Email Address:</label>
-            <input class="input-field" type="email" id="email" name="email"><br><br>
+            <fieldset style="margin-bottom: 1rem;">
+                <legend>Generation Type</legend>
 
+                <input type="radio" id="gpt-3.5" name="gen-option" value="gpt-3.5">
+                <label for="gpt-3.5">GPT-3.5</label><br>
+
+                <input type="radio" id="gpt-4" name="gen-option" value="gpt-4">
+                <label for="gpt-4">GPT-4</label><br>
+            </fieldset>
+
+            <label for="job-title">Job Title:</label>
+            <input class="input-field" type="text" id="job-title" name="title"><br><br>
+
+            <label for="job-company">Company Name:</label>
+            <input class="input-field" type="text" id="job-company" name="company"><br><br>
+
+            <label for="job-summary">Job Summary:</label>
+            <textarea class="input-field" id="job-summary" name="summary" rows="4" cols="50"></textarea><br><br>
+            
             <input id="submit-button" type="submit" value="SUBMIT">
         </form>
     </div>
+    <script src="{{ url_for('static', filename='local-portal/script.js') }}"></script>
 </body>
 </html>

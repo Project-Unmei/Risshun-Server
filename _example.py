@@ -2,8 +2,7 @@ import os
 import glob
 import risshun
 import timeit
-import pylumber as log
-
+import pylumber
 
 from dotenv import dotenv_values
 
