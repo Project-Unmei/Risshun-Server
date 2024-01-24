@@ -29,9 +29,13 @@ CORS(app)
 # Replace with your actual API key
 API_KEY = 'TESTAPIKEY'
 
+
+
 @app.route('/', methods=['GET'])
 def home():
-    return render_template('index.html')
+    return render_template("local-portal/index.html")
+
+
 
 @app.route('/api/cv/return', methods=['GET'])
 def return_cv():
@@ -46,8 +50,11 @@ def return_cv():
     else:
         abort(401)
 
+
+
 @app.route('/api/cv/generate', methods=['POST'])   
 def handle_request():
+    
     # Check if the 'X-API-KEY' header is present and contains the correct API key
     if request.headers.get('X-API-KEY') == API_KEY:
         # Check if the request contains a JSON payload
