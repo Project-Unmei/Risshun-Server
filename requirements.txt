@@ -1,9 +1,9 @@
 python-dotenv
 python-docx
-fitz
+PyMuPDF
 flask
+flas_cors
 pylumber
 docx
-PyMuPDF
 openai==1.6.1
 regex
