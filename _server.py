@@ -11,10 +11,18 @@ currDir = os.path.dirname(os.path.realpath(__file__))
 if not os.path.exists(f"{currDir}/.env"):
     raise Exception("Please create a .env file with the required environment variables. See .env.example for an example.")
 
-# Load environment variables, convert them to absolute path
+ 
+# Grabs environment variables from defined path
 ENV = dict(dotenv_values(f"{currDir}/.env"))
-#for key, value in ENV.items():
-#    ENV[key] = f"{currDir}/{value}"
+
+# If WORKING_DIR is not set, add currDir in front of each value, otherwise, add the WORKING_DIR in front of each value
+if "WORKING_DIR" in ENV.keys():
+    for key, value in ENV.items():
+        if key != "WORKING_DIR":
+            ENV[key] = f"{ENV['WORKING_DIR']}/{value}"
+else:
+    for key, value in ENV.item():
+        ENV[key] = f"{currDir}/{value}"
 
 # Creates the object from autocv for generation
 CVGeneration = risshun.docx_template(ENV["TEMPLATE_PATH"],
