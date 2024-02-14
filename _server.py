@@ -18,10 +18,10 @@ ENV = dict(dotenv_values(f"{currDir}/.env"))
 # If WORKING_DIR is not set, add currDir in front of each value, otherwise, add the WORKING_DIR in front of each value
 if "WORKING_DIR" in ENV.keys():
     for key, value in ENV.items():
-        if key != "WORKING_DIR":
+        if key != "WORKING_DIR" and key != "OPENAI_KEY":
             ENV[key] = f"{ENV['WORKING_DIR']}/{value}"
 else:
-    for key, value in ENV.item():
+    for key, value in ENV.items():
         ENV[key] = f"{currDir}/{value}"
 
 # Creates the object from autocv for generation
