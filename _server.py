@@ -1,6 +1,7 @@
 import risshun
 import os
 import json
+import webbrowser
 from flask_cors import CORS
 
 from flask import Flask, request, abort, jsonify, render_template, send_file, make_response
@@ -33,10 +34,6 @@ CVGeneration = risshun.docx_template(ENV["TEMPLATE_PATH"],
 
 app = Flask(__name__)
 CORS(app)
-
-# Replace with your actual API key
-API_KEY = 'TESTAPIKEY'
-
 
 
 @app.route('/', methods=['GET'])
@@ -84,4 +81,6 @@ def handle_request():
 
 
 if __name__ == '__main__':
+    webbrowser.open_new_tab('http://localhost:6969/')
     app.run(port=6969, debug=True)
+    

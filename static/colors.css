@@ -1,10 +1,11 @@
 :root {
     --palette-light_sea_green: #27C2B5;
-    --palette-dutch_white: #DBD8B3;
-    --palette-apricot: #FCC8B2;
-    --palette-atomic_tangerine: #EFA48B;
-    --palette-eggplant: #685369;
-    --palette-salmon: #FC8A79;
+    --palette-tiffany_blue: #93E1DA;
+    --palette-mint_green: #C9F0ED;
+    --palette-isabelline: #F4EAE9;
+    --palette-melon: #FFB1B2;
+    --palette-salmon: #FF8A8C;
+    --palette-bittersweet: #FF6365;
 
     --shade-1: #262626;
     --shade-2: #404040;

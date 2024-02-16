@@ -5,11 +5,17 @@ Auto curriculum vitae generation using Python. Also serves as a local template e
 
 ## **Local Methods for Generation**:
 
-| Preset Name | Keyword-Extraction | Paragraph-Generation | Status            | HW Requirement |
-|-------------|--------------------|----------------------|-------------------|----------------|
-| nltk_lut    | NLTK Custom        | Look-Up Table        | Under Development | Medium         |
-| rake_lut    | RAKE-NLTK          | Look-Up Table        | Under Development | Low            |
-| nltk_llama  | NLTK Custom        | Llama                | Under Development | High           |
+
+
+| Preset Name   | Keyword-Extraction | Paragraph-Generation | Status            | HW Requirement |
+|---------------|--------------------|----------------------|-------------------|----------------|
+| Chat with RTX | Various Models     | Various Models       | Under Development | High*          |
+| nltk_lut      | NLTK Custom        | Look-Up Table        | Planned           | Medium         |
+| rake_lut      | RAKE-NLTK          | Look-Up Table        | Planned           | Low            |
+| nltk_llama    | NLTK Custom        | Llama                | Planned           | High           |
+
+
+\* Requires Nvidia 30/40 Series GPU with atleast 8gb of VRAM
 
 ## **API Required Generation**
 
