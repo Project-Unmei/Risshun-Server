@@ -63,14 +63,14 @@ finally:
         para = parser.json_str_to_dict(response.choices[0].message.content)
 
         # LLM may result undesired characters, remove them
-        updated_data = {}
-        for key, value in para.items():
-            new_key = re.sub(r"Skill\s\d+:\s?", '', key, flags=re.IGNORECASE)
-            updated_data[new_key] = value
+        #updated_data = {}
+        #for key, value in para.items():
+        #    new_key = re.sub(r"Skill\s\d+:\s?", '', key, flags=re.IGNORECASE)
+        #    updated_data[new_key] = value
 
 
         token_cost = response.usage.total_tokens
-        return [updated_data, token_cost]
+        return [para, token_cost]
         
 
 

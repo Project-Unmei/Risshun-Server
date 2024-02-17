@@ -156,7 +156,7 @@ class docx_template():
         # Making copy of config and template
         tempConfig = config
         tempDocx = copy.deepcopy(self.RESOURCE['TEMPLATE'])
-        
+
         # Check config to see type of config
         configType = tempConfig["TYPE"]
         if configType not in MODEL_REQ.keys():

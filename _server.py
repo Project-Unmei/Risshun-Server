@@ -45,38 +45,31 @@ def home():
 @app.route('/api/cv/return', methods=['GET'])
 def return_cv():
     # Check if the 'X-API-KEY' header is present and contains the correct API key
-    if request.headers.get('X-API-KEY') == API_KEY:
-        tempID = request.args.get('id')
-        # Check if the output directory contains the file
-        if os.path.exists(f"{ENV['OUTPUT_DIR']}/{tempID}.docx"):
-            return send_file(f"{ENV['OUTPUT_DIR']}/{tempID}.docx", as_attachment=True)
-        else:
-            return jsonify({"message": "File not found"}), 404
+    tempID = request.args.get('id')
+    # Check if the output directory contains the file
+    if os.path.exists(f"{ENV['OUTPUT_DIR']}/{tempID}.docx"):
+        return send_file(f"{ENV['OUTPUT_DIR']}/{tempID}.docx", as_attachment=True)
     else:
-        abort(401)
+        return jsonify({"message": "File not found"}), 404
+
 
 
 
 @app.route('/api/cv/generate', methods=['POST'])   
 def handle_request():
-    
-    # Check if the 'X-API-KEY' header is present and contains the correct API key
-    if request.headers.get('X-API-KEY') == API_KEY:
-        # Check if the request contains a JSON payload
-        if request.is_json:
-            json_payload = request.get_json()
-            try:
-                outputPath = CVGeneration.find_and_replace_single(json_payload)
-            except Exception as e:
-                print("Error: AutoCV has failed in generation.")
-                # Print the error
-                print(e)
-                return jsonify({"message": "AutoCV has failed in generation."}), 500
-            return jsonify({"message": f"CV Generated, use get request at /api/cv/return?id={json_payload['UID']}"}), 200
-        else:
-            return jsonify({"message": "Missing JSON in request"}), 400
+    # Check if the request contains a JSON payload
+    if request.is_json:
+        json_payload = request.get_json()
+        try:
+            outputPath = CVGeneration.find_and_replace_single(json_payload)
+        except Exception as e:
+            print("Error: AutoCV has failed in generation.")
+            # Print the error
+            print(e)
+            return jsonify({"message": "AutoCV has failed in generation."}), 500
+        return jsonify({"message": f"CV Generated, use get request at /api/cv/return?id={json_payload['UID']}"}), 200
     else:
-        abort(401)
+        return jsonify({"message": "Missing JSON in request"}), 400
 
 
 
