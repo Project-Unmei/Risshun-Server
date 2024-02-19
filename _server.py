@@ -53,8 +53,6 @@ def return_cv():
         return jsonify({"message": "File not found"}), 404
 
 
-
-
 @app.route('/api/cv/generate', methods=['POST'])   
 def handle_request():
     # Check if the request contains a JSON payload
@@ -67,7 +65,8 @@ def handle_request():
             # Print the error
             print(e)
             return jsonify({"message": "AutoCV has failed in generation."}), 500
-        return jsonify({"message": f"CV Generated, use get request at /api/cv/return?id={json_payload['UID']}"}), 200
+        print(outputPath)
+        return send_file(outputPath, as_attachment=True)
     else:
         return jsonify({"message": "Missing JSON in request"}), 400
 

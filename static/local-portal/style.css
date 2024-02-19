@@ -117,6 +117,14 @@ textarea {
     outline: 2px var(--palette-tiffany_blue) solid;
 }
 
+
+
+.button-wrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
 #submit-button {
     font-family: 'Courier Prime', monospace;
     background-color: var(--palette-mint_green);
@@ -129,3 +137,14 @@ textarea {
     cursor: pointer;
 }
 
+#clear-button {
+    font-family: 'Courier Prime', monospace;
+    background-color: var(--palette-melon);
+    color: var(--shade-1)
+}
+
+#clear-button:hover {
+    background-color: var(--palette-bittersweet);
+    color: var(--palette-apricot);
+    cursor: pointer;
+}

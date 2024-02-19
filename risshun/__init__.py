@@ -207,7 +207,7 @@ class docx_template():
         savePath = f"{self.OUTPUT_DIR}/{tempConfig['UID']} - {tempConfig['DATA']['TITLE']}.docx"
         tempDocx.save(savePath)
         self.logger.log(f"└-- Saved document at `{self.logger.format(savePath, 2)}`", "OK")
-        return (1, savePath)
+        return (savePath)
 
     def find_and_replace_folder(self, config_dir: str, parser: callable = parser.json_path_to_dict):
         # Obtain all .json files from config directory

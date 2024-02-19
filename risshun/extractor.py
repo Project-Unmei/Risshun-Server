@@ -4,6 +4,20 @@ Modules for extracting text from a string utilizing RAKE and other methods.
 
 from . import parser
 
+# Helper Function:
+def trim_string(s):
+    # Find the index of the first occurrence of '{'
+    start_index = s.find('{')
+    # Find the index of the last occurrence of '}'
+    end_index = s.rfind('}')
+    # Check if both '{' and '}' are found
+    if start_index != -1 and end_index != -1:
+        # Return the substring including '{' and '}'
+        return s[start_index:end_index+1]
+    else:
+        # Return the original string if '{' or '}' not found
+        return s
+
 try:
     import nltk
     from rake_nltk import Rake
@@ -45,7 +59,7 @@ finally:
             model=gpt_model,
             messages=[
                 {"role":    "system", 
-                 "content": f"You are a helpful assistant who will help me generate a cover letter paragraph based on the given skill, my resume, and the job description. Know that for every prompt, assume that there is already an introduction and ending paragraphs written. Here is the job positing: {job_desc}; Here is my resume: {resume}."},
+                 "content": f"You are a helpful assistant who will help me write a cover letter paragraph based on my given skill, resume, and the job description. Know that for every prompt, assume that there is already an introduction and ending paragraphs written. Here is the job positing I will be applying to: {job_desc}; Here is my resume: {resume}."},
                 
                 {"role": "user", 
                  "content": f"""Taking into account this job description and my resume, generate {para_count} distinctly named skills (preferably soft skills) and write me a cover letter paragraphs for each skill, each of around 80 words. 
@@ -54,13 +68,17 @@ finally:
 
                  The tone of the paragraphs will be formal, but not too serious, and avoid repeating traits already mentioned in the resume, you can make simple implies from the resume. Make sure that the paragraphs are not too similar to each other. Try to keep the beginning of each paragraph unique, and try to make the paragraphs flow well together.
                  
-                 Response text should be formatted like a json in key value pairs, where the key is the skill and nothing else, and value being the paragraph. DO NOT MAKE UP SKILLS THAT ARE NOT IN MY RESUME."
+                 Response text should be formatted like a json in key value pairs, where the key is the skill and nothing else, and value being the paragraph, here is an example: {{"teamwork": "I am a great team player, and I have worked in many teams in the past, and I have always been a great asset to the team. I have always been a great team player, and I have worked in many teams in the past, and I have always been a great asset to the team.", "communication": "I am a great communicator, and I have always been able to communicate well with my team, and I have always been able to communicate well with my team. I have always been a great communicator, and I have always been able to communicate well with my team, and I have always been able to communicate well with my team.", "leadership": "I am a great leader, and I have always been able to lead my team well, and I have always been able to lead my team well. I have always been a great leader, and I have always been able to lead my team well, and I have always been able to lead my team well."}}
                  """}
             ]
         )
 
         # print(response.choices[0].message.content)
-        para = parser.json_str_to_dict(response.choices[0].message.content)
+        try:
+            para = parser.json_str_to_dict(trim_string(response.choices[0].message.content))
+        except:
+            print(trim_string(response.choices[0].message.content))
+            print("Error: OpenAI response is not in JSON format.")
 
         # LLM may result undesired characters, remove them
         #updated_data = {}

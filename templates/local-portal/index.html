@@ -21,16 +21,16 @@
                 <label for="uid">UID:</label>
                 <input class="input-field" type="text" id="uid" name="name"><br><br>
 
-                <fieldset style="margin-bottom: 1rem;">
+                <fieldset style="margin-bottom: 1rem;" class="gen-type">
                     <legend>Generation Type</legend>
 
-                    <input type="radio" id="gpt-3.5" name="gen-option" value="gpt-3.5">
+                    <input class="gen-type" type="radio" id="gpt-3.5" name="gen-option" value="gpt-3.5">
                     <label for="gpt-3.5">GPT-3.5</label><br>
 
-                    <input type="radio" id="gpt-4" name="gen-option" value="gpt-4">
+                    <input class="gen-type" type="radio" id="gpt-4" name="gen-option" value="gpt-4">
                     <label for="gpt-4">GPT-4</label><br>
 
-                    <input type="radio" id="chat-with-rtx" name="gen-option" value="chat-with-rtx">
+                    <input class="gen-type" type="radio" id="chat-with-rtx" name="gen-option" value="chat-with-rtx">
                     <label for="gpt-4">Chat With RTX<sup> 1</sup></label><br>
 
                     <h3><sup>1</sup> requires Nvidia 30/40 series GPU with >= 8GB vram</h3>
@@ -45,7 +45,11 @@
                 <label for="job-summary">Job Summary:</label>
                 <textarea class="input-field" id="job-summary" name="summary" rows="4" cols="50"></textarea><br><br>
                 
-                <input id="submit-button" type="submit" value="SUBMIT">
+                <div class="button-wrapper">
+                    <input id="submit-button" type="submit" value="SUBMIT">
+                    <input id="clear-button" type="reset" value="CLEAR">
+                </div>
+                
             </form>
         </div>
     </div>
