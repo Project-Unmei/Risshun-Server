@@ -26,11 +26,7 @@ else:
         ENV[key] = f"{currDir}/{value}"
 
 # Creates the object from autocv for generation
-CVGeneration = risshun.docx_template(ENV["TEMPLATE_PATH"],
-                                    ENV["RESUME_PATH"],
-                                    ENV["OUTPUT_DIR"], 
-                                    openai_key=ENV["OPENAI_KEY"], 
-                                    silent=False)
+CVGeneration = risshun.docx_template(config = ENV)
 
 app = Flask(__name__)
 CORS(app)

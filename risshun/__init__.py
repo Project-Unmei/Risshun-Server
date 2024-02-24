@@ -85,44 +85,42 @@ def paragraph_replace_text(paragraph, regex, replace_str):
 
 
 class docx_template():
-    def __init__(self, template_path: str, resume_path: str, output_dir: str = "output", 
-                   lut: dict = None, silent: bool = False, openai_key: str = None):
+    def __init__(self, config: dict):
         # Loading template docx file for editing
         self.logger = pylumber.lumberjack(silent=False)
-        self.logger.log(f"Loading template `{self.logger.format(template_path, 2)}`", "INFO")
+        self.logger.log(f"Loading template `{self.logger.format(config['TEMPLATE_PATH'], 2)}`", "INFO")
 
         # Setting self variables
         self.RESOURCE = {
             "RESUME": None,
             "TEMPLATE": None,
-            "LUT": lut,
-            "OPENAI_KEY": openai_key
+            "OPENAI_KEY": config['OPENAI_KEY']
         }
 
-        # Check if the extension of resume_path is .docx or .pdf and parses it to string
+        # Parsing Resume
         try:
-            if resume_path.endswith(".docx"):
-                self.RESOURCE["RESUME"] = parser.docx_to_string(resume_path)
-            elif resume_path.endswith(".pdf"):
-                self.RESOURCE["RESUME"] = parser.pdf_to_string(resume_path)
+            if config['RESUME_PATH'].endswith(".docx"):
+                self.RESOURCE["RESUME"] = parser.docx_to_string(config['RESUME_PATH'])
+            elif config['RESUME_PATH'].endswith(".pdf"):
+                self.RESOURCE["RESUME"] = parser.pdf_to_string(config['RESUME_PATH'])
             else:
                 raise Exception("Invalid resume file extension.")
         except:
-            self.logger.log(f"└-- Error parsing resume file: {self.logger.format(resume_path, 2)}", 2)
+            self.logger.log(f"└-- Error parsing resume file: {self.logger.format(config['RESUME_PATH'], 2)}", 2)
             raise Exception("Error parsing resume file.")
         
-        # Convert the template path to a Document object
+        # Parsing Template
         try:
-            self.RESOURCE["TEMPLATE"] = Document(template_path)
+            self.RESOURCE["TEMPLATE"] = Document(config['TEMPLATE_PATH'])
         except:
-            self.logger.log(f"└-- Error parsing template file: {self.logger.format(template_path, 2)}", 2)
+            self.logger.log(f"└-- Error parsing template file: {self.logger.format(config['TEMPLATE_PATH'], 2)}", 2)
             raise Exception("Error parsing template file.")
 
-        # Check to see if output directory exists
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
-            self.logger.log(f"Created output directory: {output_dir}")
-        self.OUTPUT_DIR = output_dir
+        # Parsing Output Directory
+        if not os.path.exists(config['OUTPUT_DIR']):
+            os.mkdir(config['OUTPUT_DIR'])
+            self.logger.log(f"Created output directory: {config['OUTPUT_DIR']}")
+        self.OUTPUT_DIR = config['OUTPUT_DIR']
 
     def parse_config_with_lut(self, config: dict):
         # Modify the config dict so for every value which is a list, use the LUT to lookup and create
@@ -174,6 +172,7 @@ class docx_template():
         for key, value in tempConfig["DATA"].items():
             combined_job_desc += f"{key}: {value}\n"
 
+        # Configuration : Chat GPT Generation
         if configType == "gpt":
             if self.RESOURCE["OPENAI_KEY"] == None:
                 self.logger.log(f"└-- OpenAI key not found.", 2)
@@ -181,6 +180,11 @@ class docx_template():
             modelRequested = "gpt-3.5-turbo"
             skillPara, tokenCost = extractor.extract__and_generate_with_gpt(combined_job_desc, self.RESOURCE['RESUME'], self.RESOURCE["OPENAI_KEY"], gpt_model=modelRequested)
             self.logger.log(f"└-- Generated paragraphs with {modelRequested}, cost: {tokenCost}", "OK")
+        # Configuration : RTX Chat Generation
+        elif configType == "rtx":
+            if self.RESOURCE["OPENAI_KEY"] == None:
+                self.logger.log(f"└-- OpenAI key not found.", 2)
+                return (0, "OpenAI key not found.")
         else:
             self.logger.log(f"└-- Invalid config type.", 2)
             return (0, "Invalid config type, this path has not been programmed.")

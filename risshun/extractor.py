@@ -91,6 +91,10 @@ finally:
         return [para, token_cost]
         
 
+def extract__and_generate_with_rtx(job_desc: str, rtx_port: str, rtx_address: str = "http://localhost", para_count: int = 3):
+    pass
+
+
 
 debug = True
 
